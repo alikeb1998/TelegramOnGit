@@ -40,7 +40,7 @@ android {
     buildToolsVersion '29.0.2'
     ndkVersion "20.0.5594570"
 
-    defaultConfig.applicationId = "org.telegram.messenger"
+    defaultConfig.applicationId = "net.vido.messenger"
 
     sourceSets.main.jniLibs.srcDirs = ['./jni/']
 
@@ -91,6 +91,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
 
+
         /*debugAsan {
             debuggable true
             jniDebuggable true
@@ -139,8 +140,8 @@ android {
         }
 
         release {
-            debuggable false
-            jniDebuggable false
+            debuggable true
+            jniDebuggable true
             signingConfig signingConfigs.release
             minifyEnabled true
             shrinkResources false
@@ -172,15 +173,15 @@ android {
     flavorDimensions "minApi"
 
     productFlavors {
-        armv7 {
+        /*armv7 {
             ndk {
                 abiFilters "armeabi-v7a"
             }
             ext {
                 abiVersionCode = 1
             }
-        }
-        x86 {
+        }*/
+        /*x86 {
             ndk {
                 abiFilters "x86"
             }
@@ -241,9 +242,9 @@ android {
             sourceSets.debug {
                 manifest.srcFile 'config/debug/AndroidManifest_SDK23.xml'
             }
-            /*sourceSets.debugAsan {
+            *//*sourceSets.debugAsan {
                 manifest.srcFile 'config/debug/AndroidManifest_SDK23.xml'
-            }*/
+            }*//*
             sourceSets.release {
                 manifest.srcFile 'config/release/AndroidManifest_SDK23.xml'
             }
@@ -271,14 +272,22 @@ android {
             sourceSets.debug {
                 manifest.srcFile 'config/debug/AndroidManifest_SDK23.xml'
             }
-            /*sourceSets.debugAsan {
+            *//*sourceSets.debugAsan {
                 manifest.srcFile 'config/debug/AndroidManifest_SDK23.xml'
-            }*/
+            }*//*
             sourceSets.release {
                 manifest.srcFile 'config/release/AndroidManifest_SDK23.xml'
             }
             ext {
                 abiVersionCode = 9
+            }
+        }*/
+        arm64 {
+            ndk {
+                abiFilters "arm64-v8a"
+            }
+            ext {
+                abiVersionCode = 5
             }
         }
     }

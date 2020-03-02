@@ -43,6 +43,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
@@ -57,6 +58,7 @@ import org.telegram.messenger.R;
 import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.Utilities;
 import org.telegram.messenger.time.SunDate;
+import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.ActionBarMenu;
 import org.telegram.ui.ActionBar.ActionBarMenuItem;
@@ -123,6 +125,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
     private int directShareRow;
     private int raiseToSpeakRow;
     private int sendByEnterRow;
+    private int sendStickerByTouchRow;
     private int saveToGalleryRow;
     private int distanceRow;
     private int enableAnimationsRow;
@@ -166,6 +169,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
     private int rowCount;
 
     private boolean updatingLocation;
+    private boolean myGb;
 
     private int previousUpdatedType;
     private boolean previousByLocation;
@@ -326,6 +330,11 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
         currentType = type;
         updateRows(true);
     }
+//    public ThemeActivity(int type, Bundle args){
+//        super(args);
+//        currentType= type;
+//        updateRows(true);
+//    }
 
     private boolean setBubbleRadius(int size, boolean layout) {
         if (size != SharedConfig.bubbleRadius) {
@@ -425,6 +434,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
         chatListRow = -1;
         chatListInfoRow = -1;
 
+
         textSizeRow = -1;
         backgroundRow = -1;
         settingsRow = -1;
@@ -433,6 +443,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
         enableAnimationsRow = -1;
         raiseToSpeakRow = -1;
         sendByEnterRow = -1;
+        sendStickerByTouchRow = -1;
         saveToGalleryRow = -1;
         distanceRow = -1;
         settings2Row = -1;
@@ -480,19 +491,23 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
             chatListRow = rowCount++;
             chatListInfoRow = rowCount++;
 
-            settingsRow = rowCount++;
-            nightThemeRow = rowCount++;
-            customTabsRow = rowCount++;
-            directShareRow = rowCount++;
-            enableAnimationsRow = rowCount++;
-            emojiRow = rowCount++;
-            raiseToSpeakRow = rowCount++;
-            sendByEnterRow = rowCount++;
-            saveToGalleryRow = rowCount++;
-            distanceRow = rowCount++;
-            settings2Row = rowCount++;
-            stickersRow = rowCount++;
-            stickersSection2Row = rowCount++;
+
+            if (!myGb) {
+                settingsRow = rowCount++;
+                nightThemeRow = rowCount++;
+                customTabsRow = rowCount++;
+                directShareRow = rowCount++;
+                enableAnimationsRow = rowCount++;
+                emojiRow = rowCount++;
+                raiseToSpeakRow = rowCount++;
+                sendByEnterRow = rowCount++;
+                sendStickerByTouchRow = rowCount++;
+                saveToGalleryRow = rowCount++;
+                distanceRow = rowCount++;
+                settings2Row = rowCount++;
+                stickersRow = rowCount++;
+                stickersSection2Row = rowCount++;
+            }
         } else {
             nightDisabledRow = rowCount++;
             nightScheduledRow = rowCount++;
@@ -604,6 +619,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
 
     @Override
     public boolean onFragmentCreate() {
+//        myGb = arguments.getBoolean("gb",false);
         NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.locationPermissionGranted);
         NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.didSetNewWallpapper);
         NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.themeListUpdated);
@@ -622,6 +638,9 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
 
     @Override
     public void onFragmentDestroy() {
+//        SharedConfig.goneBoolean = true;
+//        myGb = false;
+//        Toast.makeText(getParentActivity(), "falsed: " + SharedConfig.goneBoolean, Toast.LENGTH_SHORT).show();
         super.onFragmentDestroy();
         stopLocationUpdate();
         NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.locationPermissionGranted);
@@ -753,7 +772,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                             listAdapter.notifyItemChanged(bubbleRadiusRow, new Object());
                         }
                         if (themesHorizontalListCell != null) {
-                            Theme.ThemeInfo themeInfo = Theme.getTheme("Blue");
+                            Theme.ThemeInfo themeInfo = Theme.getTheme("Arctic Blue");
                             Theme.ThemeInfo currentTheme = Theme.getCurrentTheme();
                             if (themeInfo != currentTheme) {
                                 themeInfo.setCurrentAccentId(Theme.DEFALT_THEME_ACCENT_ID);
@@ -787,6 +806,9 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
         listView.setLayoutManager(layoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
         listView.setVerticalScrollBarEnabled(false);
         listView.setAdapter(listAdapter);
+
+
+
         ((DefaultItemAnimator) listView.getItemAnimator()).setDelayAnimations(false);
         frameLayout.addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
         listView.setOnItemClickListener((view, position, x, y) -> {
@@ -810,6 +832,18 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(!send);
                 }
+            } else if (position == sendStickerByTouchRow) {
+                SharedPreferences sharedPreferences = MessagesController.getGlobalMainSettings();
+                boolean f = sharedPreferences.getBoolean("send", false);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean("send", !f);
+                editor.commit();
+
+
+                if (view instanceof TextCheckCell) {
+                    ((TextCheckCell) view).setChecked(!f);
+                }
+                // Toast.makeText(context, "" + f, Toast.LENGTH_SHORT).show();
             } else if (position == raiseToSpeakRow) {
                 SharedConfig.toogleRaiseToSpeak();
                 if (view instanceof TextCheckCell) {
@@ -1859,7 +1893,8 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                         headerCell.setText(LocaleController.getString("AutoNightPreferred", R.string.AutoNightPreferred));
                     } else if (position == settingsRow) {
                         headerCell.setText(LocaleController.getString("SETTINGS", R.string.SETTINGS));
-                    } else if (position == themeHeaderRow) {
+                    }
+                    else if (position == themeHeaderRow) {
                         headerCell.setText(LocaleController.getString("ColorTheme", R.string.ColorTheme));
                     } else if (position == textSizeHeaderRow) {
                         headerCell.setText(LocaleController.getString("TextSizeHeader", R.string.TextSizeHeader));
@@ -1885,6 +1920,9 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                     } else if (position == sendByEnterRow) {
                         SharedPreferences preferences = MessagesController.getGlobalMainSettings();
                         textCheckCell.setTextAndCheck(LocaleController.getString("SendByEnter", R.string.SendByEnter), preferences.getBoolean("send_by_enter", false), true);
+                    } else if (position == sendStickerByTouchRow) {
+                        SharedPreferences preferences = MessagesController.getGlobalMainSettings();
+                        textCheckCell.setTextAndCheck("Send Stickers By Touch", preferences.getBoolean("send", false), true);
                     } else if (position == saveToGalleryRow) {
                         textCheckCell.setTextAndCheck(LocaleController.getString("SaveToGallerySettings", R.string.SaveToGallerySettings), SharedConfig.saveToGallery, true);
                     } else if (position == raiseToSpeakRow) {
@@ -1973,6 +2011,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
             } else if (position == automaticBrightnessRow) {
                 return 6;
             } else if (position == scheduleLocationRow || position == enableAnimationsRow || position == sendByEnterRow ||
+                    position == sendStickerByTouchRow ||
                     position == saveToGalleryRow || position == raiseToSpeakRow || position == customTabsRow ||
                     position == directShareRow || position == emojiRow) {
                 return 7;
@@ -2053,15 +2092,14 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                 new ThemeDescription(listView, 0, new Class[]{NotificationsCheckCell.class}, new String[]{"valueTextView"}, null, null, null, Theme.key_windowBackgroundWhiteGrayText2),
                 new ThemeDescription(listView, 0, new Class[]{NotificationsCheckCell.class}, new String[]{"checkBox"}, null, null, null, Theme.key_switchTrack),
                 new ThemeDescription(listView, 0, new Class[]{NotificationsCheckCell.class}, new String[]{"checkBox"}, null, null, null, Theme.key_switchTrackChecked),
+
                 new ThemeDescription(listView, 0, null, null, new Drawable[]{Theme.chat_msgInDrawable, Theme.chat_msgInMediaDrawable}, null, Theme.key_chat_inBubble),
                 new ThemeDescription(listView, 0, null, null, new Drawable[]{Theme.chat_msgInSelectedDrawable, Theme.chat_msgInMediaSelectedDrawable}, null, Theme.key_chat_inBubbleSelected),
-                new ThemeDescription(listView, 0, null, null, Theme.chat_msgInDrawable.getShadowDrawables(), null, Theme.key_chat_inBubbleShadow),
-                new ThemeDescription(listView, 0, null, null, Theme.chat_msgInMediaDrawable.getShadowDrawables(), null, Theme.key_chat_inBubbleShadow),
+                new ThemeDescription(listView, 0, null, null, new Drawable[]{Theme.chat_msgInDrawable.getShadowDrawable(), Theme.chat_msgInMediaDrawable.getShadowDrawable()}, null, Theme.key_chat_inBubbleShadow),
                 new ThemeDescription(listView, 0, null, null, new Drawable[]{Theme.chat_msgOutDrawable, Theme.chat_msgOutMediaDrawable}, null, Theme.key_chat_outBubble),
                 new ThemeDescription(listView, 0, null, null, new Drawable[]{Theme.chat_msgOutDrawable, Theme.chat_msgOutMediaDrawable}, null, Theme.key_chat_outBubbleGradient),
                 new ThemeDescription(listView, 0, null, null, new Drawable[]{Theme.chat_msgOutSelectedDrawable, Theme.chat_msgOutMediaSelectedDrawable}, null, Theme.key_chat_outBubbleSelected),
-                new ThemeDescription(listView, 0, null, null, Theme.chat_msgOutDrawable.getShadowDrawables(), null, Theme.key_chat_outBubbleShadow),
-                new ThemeDescription(listView, 0, null, null, Theme.chat_msgOutMediaDrawable.getShadowDrawables(), null, Theme.key_chat_outBubbleShadow),
+                new ThemeDescription(listView, 0, null, null, new Drawable[]{Theme.chat_msgOutDrawable.getShadowDrawable(), Theme.chat_msgOutMediaDrawable.getShadowDrawable()}, null, Theme.key_chat_outBubbleShadow),
                 new ThemeDescription(listView, 0, null, null, null, null, Theme.key_chat_messageTextIn),
                 new ThemeDescription(listView, 0, null, null, null, null, Theme.key_chat_messageTextOut),
                 new ThemeDescription(listView, 0, null, null, new Drawable[]{Theme.chat_msgOutCheckDrawable}, null, Theme.key_chat_outSentCheck),

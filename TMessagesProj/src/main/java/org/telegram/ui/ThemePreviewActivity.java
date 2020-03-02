@@ -1637,12 +1637,15 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
                 }
                 if (accent != null) {
                     saveAccentWallpaper();
+                   // applyingTheme.account = UserConfig.selectedAccount;
                     Theme.saveThemeAccents(applyingTheme, true, false, false, false);
                     Theme.clearPreviousTheme();
                     Theme.applyTheme(applyingTheme, nightTheme);
+
                     parentLayout.rebuildAllFragmentViews(false, false);
                 } else {
                     parentLayout.rebuildAllFragmentViews(false, false);
+                 //   applyingTheme.account = UserConfig.selectedAccount;
                     Theme.applyThemeFile(new File(applyingTheme.pathToFile), applyingTheme.name, applyingTheme.info, false);
                     MessagesController.getInstance(applyingTheme.account).saveTheme(applyingTheme, null, false, false);
                     SharedPreferences.Editor editor = ApplicationLoader.applicationContext.getSharedPreferences("themeconfig", Activity.MODE_PRIVATE).edit();
@@ -1653,6 +1656,7 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
                 if (screenType == SCREEN_TYPE_PREVIEW) {
                     NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.didApplyNewTheme, previousTheme, previousAccent, deleteOnCancel);
                 }
+
             });
         }
 

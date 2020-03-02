@@ -17,6 +17,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -29,6 +30,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Parcelable;
 import android.os.StatFs;
 import android.os.SystemClock;
@@ -87,6 +89,7 @@ import org.telegram.ui.ActionBar.DrawerLayoutContainer;
 import org.telegram.ui.Cells.DrawerAddCell;
 import org.telegram.ui.Cells.DrawerUserCell;
 import org.telegram.ui.Cells.LanguageCell;
+import org.telegram.ui.Cells.ThemesHorizontalListCell;
 import org.telegram.ui.Components.AudioPlayerAlert;
 import org.telegram.ui.Components.AlertsCreator;
 import org.telegram.ui.Components.BlockingUpdateView;
@@ -108,6 +111,8 @@ import org.telegram.ui.Components.ThemeEditorView;
 import org.telegram.ui.Components.UpdateAppAlertDialog;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -216,6 +221,20 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
                 }
             }
         }
+//       ThemesHorizontalListCell cell = new ThemesHorizontalListCell(getApplicationContext(),0,null,null);
+//        AssetManager am = getApplicationContext().getAssets();
+//        try {
+//             am.open("bluebubbles.attheme").read();
+//
+//
+//           // cell.selectThemeBy(Theme.getAssetFile("day.attheme"))
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//
+//        Theme.ThemeInfo arr;
+//        arr.get
+//        FileLoader.getInstance(arr.account).loadFile(arr.info.document,arr.info,1
+
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setTheme(R.style.Theme_TMessages);
@@ -543,7 +562,8 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
 
         if (actionBarLayout.fragmentsStack.isEmpty()) {
             if (!UserConfig.getInstance(currentAccount).isClientActivated()) {
-                actionBarLayout.addFragmentToStack(new LoginActivity());
+               // actionBarLayout.addFragmentToStack(new LoginActivity());
+                actionBarLayout.addFragmentToStack(new NewThemesActivity(0));
                 drawerLayoutContainer.setAllowOpenDrawer(false, false);
             } else {
                 DialogsActivity dialogsActivity = new DialogsActivity(null);
@@ -667,7 +687,14 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
             FileLog.e(e);
         }
         MediaController.getInstance().setBaseActivity(this, true);
+     String fileName ="arctic.attheme";
+     File file = new File(Environment.getExternalStorageDirectory()+"/vidoThemes/",fileName);
+     Theme.ThemeInfo themeInfo = Theme.applyThemeFile(file,fileName,null,true);
+     ThemesHorizontalListCell cell = new ThemesHorizontalListCell(getApplicationContext(),1,null,null);
+     cell.selectThemeBy(themeInfo);
+
     }
+
 
     private void checkSystemBarColors() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

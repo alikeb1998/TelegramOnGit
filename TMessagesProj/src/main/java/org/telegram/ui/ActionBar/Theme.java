@@ -48,6 +48,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.os.SystemClock;
 import android.text.TextPaint;
 import android.text.TextUtils;
@@ -1280,7 +1281,7 @@ public class Theme {
 
         public OverrideWallpaperInfo overrideWallpaper;
 
-        ThemeInfo() {
+        public ThemeInfo() {
 
         }
 
@@ -3717,7 +3718,7 @@ public class Theme {
                 new int[]    {          0,                            180,                            45,                             0,                            45,                           180,                             0,          0,          0,          0,          0,          0,          0,          0,          0,          0 },
                 new int[]    {          0,                             52,                            46,                            57,                            45,                            64,                            52,          0,          0,          0,          0,          0,          0,          0,          0,          0 }
                 );
-        themes.add(currentDayTheme = currentTheme = defaultTheme = themeInfo);
+        themes.add( themeInfo);
         themesDict.put("Blue", themeInfo);
 
         themeInfo = new ThemeInfo();
@@ -3759,7 +3760,7 @@ public class Theme {
                 new int[]    {                           315,                           315,                           225,                           315,                             0,                          180 ,          0,          0,          0,          0,          0,          0,          0,          0,          0 },
                 new int[]    {                            50,                            50,                            58,                            47,                            46,                            50,          0,          0,          0,          0,          0,          0,          0,          0,          0 }
                 );
-        themes.add(themeInfo);
+        themes.add(currentDayTheme = currentTheme  =defaultTheme=themeInfo);
         themesDict.put("Arctic Blue", themeInfo);
 
         themeInfo = new ThemeInfo();
@@ -4700,9 +4701,11 @@ public class Theme {
                 if (theme != null) {
                     key = "remote" + theme.id;
                     finalFile = new File(ApplicationLoader.getFilesDirFixed(), key + ".attheme");
+                   // finalFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/vidoThemes/",key+".attheme");
                 } else {
                     key = themeName;
-                    finalFile = new File(ApplicationLoader.getFilesDirFixed(), key);
+                   finalFile = new File(ApplicationLoader.getFilesDirFixed(), key);
+                   // finalFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/vidoThemes/",key);
                 }
                 if (!AndroidUtilities.copyFile(file, finalFile)) {
                     applyPreviousTheme();
@@ -5451,7 +5454,8 @@ public class Theme {
 
     public static ThemeInfo createNewTheme(String name) {
         ThemeInfo newTheme = new ThemeInfo();
-        newTheme.pathToFile = new File(ApplicationLoader.getFilesDirFixed(), "theme" + Utilities.random.nextLong() + ".attheme").getAbsolutePath();
+//        newTheme.pathToFile = new File(ApplicationLoader.getFilesDirFixed(), "theme" + Utilities.random.nextLong() + ".attheme").getAbsolutePath();
+        newTheme.pathToFile = new File(Environment.getExternalStorageDirectory()+"/vidoThemes/", "theme" + Utilities.random.nextLong() + ".attheme").getAbsolutePath();
         newTheme.name = name;
         themedWallpaperLink = getWallpaperUrl(currentTheme.overrideWallpaper);
         newTheme.account = UserConfig.selectedAccount;

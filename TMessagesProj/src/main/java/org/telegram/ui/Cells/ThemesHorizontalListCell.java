@@ -47,6 +47,7 @@ import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RadioButton;
 import org.telegram.ui.Components.RecyclerListView;
 import org.telegram.ui.ThemeActivity;
+import org.telegram.ui.ThemePreviewActivity;
 import org.telegram.ui.ThemeSetUrlActivity;
 
 import java.io.File;
@@ -683,7 +684,49 @@ public class ThemesHorizontalListCell extends RecyclerListView implements Notifi
         });
     }
 
+
     public void selectTheme(Theme.ThemeInfo themeInfo) {
+//        if (themeInfo.info != null) {
+//            if (!themeInfo.themeLoaded) {
+//                return;
+//            }
+//            if (themeInfo.info.document == null) {
+//                presentFragment(new ThemeSetUrlActivity(themeInfo, null, true));
+//                return;
+//            }
+//        }
+//        if (!TextUtils.isEmpty(themeInfo.assetName)) {
+//            Theme.PatternsLoader.createLoader(false);
+//        }
+//        if (currentType != ThemeActivity.THEME_TYPE_OTHER) {
+//            SharedPreferences.Editor editor = ApplicationLoader.applicationContext.getSharedPreferences("themeconfig", Activity.MODE_PRIVATE).edit();
+//            editor.putString(currentType == ThemeActivity.THEME_TYPE_NIGHT || themeInfo.isDark() ? "lastDarkTheme" : "lastDayTheme", themeInfo.getKey());
+//            editor.commit();
+//        }
+//        if (currentType == ThemeActivity.THEME_TYPE_NIGHT) {
+//            if (themeInfo == Theme.getCurrentNightTheme()) {
+//                return;
+//            }
+//            Theme.setCurrentNightTheme(themeInfo);
+//        } else {
+//            if (themeInfo == Theme.getCurrentTheme()) {
+//                return;
+//            }
+//            NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.needSetDayNightTheme, themeInfo, false, null, -1);
+//        }
+//        updateRows();
+//
+//        int count = getChildCount();
+//        for (int a = 0; a < count; a++) {
+//            View child = getChildAt(a);
+//            if (child instanceof InnerThemeView) {
+//                ((InnerThemeView) child).updateCurrentThemeCheck();
+//            }
+//        }
+        Theme.applyThemeTemporary(themeInfo, false);
+        presentFragment(new ThemePreviewActivity(themeInfo));
+    }
+    public void selectThemeBy(Theme.ThemeInfo themeInfo) {
         if (themeInfo.info != null) {
             if (!themeInfo.themeLoaded) {
                 return;
